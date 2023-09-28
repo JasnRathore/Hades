@@ -3,8 +3,8 @@ from HORUS import *
 from CRONUS import *
 import random
 
-def placeholder(): # currently used in main menu inplace of fincanceMenu function and GUARds MENU
-    print("Placeholder")
+def placeholder(a,b): # currently used in main menu inplace of fincanceMenu function and GUARds MENU
+    print("Placeholder",a,b)
 
 def MainMenu(User, DataBase, Cursor):
     Access = {"WARDEN": PrisonerMenu, "CHIEF_OFFICER": placeholder,"FINANCE_OFFICER": placeholder}
