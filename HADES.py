@@ -1,15 +1,8 @@
 from Initialisation import *
 from HORUS import *
 from CRONUS import *
+from HERMES import *
 import random
-
-def placeholder(a,b): # currently used in main menu inplace of fincanceMenu function and GUARds MENU
-    print("Placeholder",a,b)
-
-def MainMenu(User, DataBase, Cursor):
-    Access = {"WARDEN": PrisonerMenu, "CHIEF_OFFICER": placeholder,"FINANCE_OFFICER": placeholder}
-    Access[User](DataBase, Cursor)
-
 
 def main():
     Cursor, DataBase, Connected = init()
@@ -17,12 +10,12 @@ def main():
         Cursor.execute("SELECT * FROM Login;")
         #User and Password details
         Data = Cursor.fetchall()
-        Users,Passw=[],[]
+        Users,Passw=[],[] 
         for rec in Data:
             Users.append(rec[0])
             Passw.append(rec[1])
         while True:
-            print("""\n-----------------------------HADES------------------------------------\n
+            print("""\n-----------------------------HADES LOGIN-----------------------------\n
 1) Login
 2) Change Password
 3) Exit\n""")
@@ -40,8 +33,8 @@ def main():
                     if password != Passw[Userno]:
                         print("Invalid Password! Try Again!")
                     else:
-                        MainMenu(username, DataBase, Cursor)
-                        break
+                        print("Menu Call")
+                        break         
             if chc == 2:
                 while True:
                     print("\n-----------------------------CHANGE PASSWORD-----------------------------\n")
@@ -66,5 +59,19 @@ def main():
             if chc == 3:
                 break
         DataBase.commit()
-main()
 
+#main()
+def prisoner():
+    Cursor, DataBase, Connected = init()
+    PrisonerMenu(DataBase,Cursor)
+    DataBase.commit()
+
+def guards():
+    Cursor, DataBase, Connected = init()
+    guards_menu(Cursor,guards)
+    DataBase.commit()
+
+def finance():
+    Cursor, DataBase, Connected = init()
+    finance_menu(Cursor)
+    DataBase.commit()
