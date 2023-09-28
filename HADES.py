@@ -3,18 +3,26 @@ from HORUS import *
 from CRONUS import *
 import random
 
+def placeholder(): # currently used in main menu inplace of fincanceMenu function and GUARds MENU
+    print("Placeholder")
+
+def MainMenu(User, DataBase, Cursor):
+    Access = {"WARDEN": PrisonerMenu, "CHIEF_OFFICER": placeholder,"FINANCE_OFFICER": placeholder}
+    Access[User](DataBase, Cursor)
+
+
 def main():
     Cursor, DataBase, Connected = init()
     if Connected is True:
         Cursor.execute("SELECT * FROM Login;")
         #User and Password details
         Data = Cursor.fetchall()
-        Users,Passw=[],[] 
+        Users,Passw=[],[]
         for rec in Data:
             Users.append(rec[0])
             Passw.append(rec[1])
         while True:
-            print("""\n-----------------------------HADES LOGIN-----------------------------\n
+            print("""\n-----------------------------HADES------------------------------------\n
 1) Login
 2) Change Password
 3) Exit\n""")
@@ -32,8 +40,8 @@ def main():
                     if password != Passw[Userno]:
                         print("Invalid Password! Try Again!")
                     else:
-                        print("Menu Call")
-                        break         
+                        MainMenu(username, DataBase, Cursor)
+                        break
             if chc == 2:
                 while True:
                     print("\n-----------------------------CHANGE PASSWORD-----------------------------\n")
