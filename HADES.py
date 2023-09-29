@@ -10,7 +10,7 @@ def main():
         Cursor.execute("SELECT * FROM Login;")
         #User and Password details
         Data = Cursor.fetchall()
-        Users,Passw=[],[] 
+        Users,Passw=[],[]
         for rec in Data:
             Users.append(rec[0])
             Passw.append(rec[1])
@@ -33,8 +33,16 @@ def main():
                     if password != Passw[Userno]:
                         print("Invalid Password! Try Again!")
                     else:
-                        print("Menu Call")
-                        break         
+                        #Access = {"WARDEN": PrisonerMenu, "CHIEF_OFFICER": "placeholder" ,"FINANCE_OFFICER": finance_menu}
+                        #Access[username](DataBase, Cursor)
+                        #i want to use the above implementation but you all are formating it diffrently so i am doing it like this
+                        if username == "WARDEN":
+                            PrisonerMenu(DataBase, Cursor)
+                        elif username == "CHIEF_OFFICER":
+                            pass
+                        elif username == "FINANCE_OFFICER":
+                            finance_menu(Cursor)
+                        break
             if chc == 2:
                 while True:
                     print("\n-----------------------------CHANGE PASSWORD-----------------------------\n")
@@ -59,19 +67,3 @@ def main():
             if chc == 3:
                 break
         DataBase.commit()
-
-#main()
-def prisoner():
-    Cursor, DataBase, Connected = init()
-    PrisonerMenu(DataBase,Cursor)
-    DataBase.commit()
-
-def guards():
-    Cursor, DataBase, Connected = init()
-    guards_menu(Cursor,guards)
-    DataBase.commit()
-
-def finance():
-    Cursor, DataBase, Connected = init()
-    finance_menu(Cursor)
-    DataBase.commit()
