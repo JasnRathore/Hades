@@ -15,7 +15,7 @@ def main():
             Users.append(rec[0])
             Passw.append(rec[1])
         while True:
-            print("""\n-----------------------------HADES LOGIN-----------------------------\n
+            print("""\n-----------------------------HADES-----------------------------------\n
 1) Login
 2) Change Password
 3) Exit\n""")
@@ -33,15 +33,8 @@ def main():
                     if password != Passw[Userno]:
                         print("Invalid Password! Try Again!")
                     else:
-                        #Access = {"WARDEN": PrisonerMenu, "CHIEF_OFFICER": "placeholder" ,"FINANCE_OFFICER": finance_menu}
-                        #Access[username](DataBase, Cursor)
-                        #i want to use the above implementation but you all are formating it diffrently so i am doing it like this
-                        if username == "WARDEN":
-                            PrisonerMenu(DataBase, Cursor)
-                        elif username == "CHIEF_OFFICER":
-                            pass
-                        elif username == "FINANCE_OFFICER":
-                            finance_menu(Cursor)
+                        Access = {"WARDEN": PrisonerMenu, "CHIEF_OFFICER": guards_menu,"FINANCE_OFFICER": finance_menu}
+                        Access[username](DataBase, Cursor)
                         break
             if chc == 2:
                 while True:
@@ -67,3 +60,5 @@ def main():
             if chc == 3:
                 break
         DataBase.commit()
+
+main()
