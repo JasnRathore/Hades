@@ -1,6 +1,6 @@
 from prettytable import PrettyTable
 from Initialisation import *
-        
+
 def TimeValidate(Time): #Only valid for(HH:MM:SS,HHMMSS)
     try:
         if len(Time)== 8 and Time[2] in ':':
@@ -26,8 +26,8 @@ def InputGuards(Cursor,mode):
                 break
             print ("GNO dosent exist\n")
     Cursor.execute(f"SELECT NAME FROM guards;")
-    Names = []    
-    Name_lst=Cursor.fetchall()   
+    Names = []
+    Name_lst=Cursor.fetchall()
     for rec in Name_lst:
         Names.append(rec[0])
     while True:
@@ -58,7 +58,7 @@ def InputGuards(Cursor,mode):
         elif mode=='M'and gender == "":
             break
         else:
-            print("Please select  valid gender!")      
+            print("Please select  valid gender!")
     while True:
         salary = input("Please enter salary: ")
         #Checking for valid salary
@@ -82,12 +82,12 @@ def InputGuards(Cursor,mode):
         dst=input("Please enter duty start time (HH:MM:SS,HHMMSS):")
         if TimeValidate(dst) is True or (mode == "M" and dst == ""):
             break
-        print("\nInvalid time\n")  
+        print("\nInvalid time\n")
     while True:
         det=input("Please enter duty end time (HH:MM:SS,HHMMSS):")
         if TimeValidate(det) is True or (mode == "M" and det == ""):
             break
-        print("\nInvalid time\n")   
+        print("\nInvalid time\n")
 
     return gno,Name,age,gender,salary,cb,dst,det
 
@@ -124,20 +124,20 @@ def modify(DataBase,Cursor):
         for i in range(len(fields)):
             if fields[i]=="":
                 fields[i]=PreviousData[i]
-        gno=fields.pop(0)   
-        fields.append(gno)   
+        gno=fields.pop(0)
+        fields.append(gno)
         update = f"UPDATE guards SET NAME = %s,AGE = %s,GENDER = %s,SALARY = %s,CELL_BLOCK = %s,DUTY_START_TIME = %s,DUTY_END_TIME = %s WHERE gno = %s;"
         Cursor.execute(update,fields)
         DataBase.commit()
-        print("\nRecord updated\n")    
+        print("\nRecord updated\n")
         modify_chc = input("Do you wish to modify another record? [Y/N]: ").upper()
         if modify_chc == "Y":
             continue
         else:
             break
-        
+
 def delete(DataBase,Cursor):
-    while True: 
+    while True:
         view(Cursor)
         print("--------------------------------Delete Record--------------------------------")
         gno=int(input("Enter the guard number of the record to be deleted: "))
@@ -182,7 +182,3 @@ def guards_menu(DataBase,Cursor):
             break
         else:
             print("Invalid input! ")
-           
-    
-    
-
