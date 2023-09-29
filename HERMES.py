@@ -1,6 +1,4 @@
-import random
 from prettytable import PrettyTable
-from Initialisation import *
 from datetime import *
 from CRONUS import *
 
@@ -56,7 +54,7 @@ def view_fund(Cursor):
     print(f"Expenditure [Daily]: {Expenditure}, Expendiutre [Monthly]: {Expenditure*30}")
     print(f"Revenue [Daily]: {Income-Expenditure}, Revenue [Monthly]: {(Income-Expenditure)*30}")
     print(f"Balance: {Balance}")
-    
+
 def view_transactions(Cursor):
     mytable = PrettyTable(["No.","Date","Time","[                Description                ]","Amount"])
     Cursor.execute("SELECT * FROM Transaction;")
@@ -85,7 +83,7 @@ def modify(Cursor,mode = "income"):
         while True:
             chc = input("Expense Rate to be modified: ").upper()
             if chc in ['MAINTANENCE','WATER','ELECTRICITY','FOOD','HEALTHCARE']:
-                new_rate = int(input("Enter new rate: ")) 
+                new_rate = int(input("Enter new rate: "))
                 Cursor.execute(f"UPDATE EXPENDITURE SET RATE = {new_rate} where EXPENSES = '{chc}';")
                 print("Update Successful!")
                 print(view_rates(Cursor,mode="expenditure"))
@@ -95,7 +93,7 @@ def modify(Cursor,mode = "income"):
             else:
                 print("Please select a valid expense!")
 
-def funds(Cursor,mode = "add"):
+def funds(DataBase, Cursor,mode = "add"):
     Cursor.execute("SELECT COUNT(*) FROM Transaction")
     transaction_no = Cursor.fetchone()[0] + 1
     date_now = str(datetime.today())
@@ -132,7 +130,7 @@ def finance_menu(Cursor):
 4) Modify Expenditure
 5) Add Funds
 6) Deduct Funds
-7) Exit  
+7) Exit
 """
 )
         menu_chc = int(input("Please select a choice [1/2/3/4/5/6/7]: "))
