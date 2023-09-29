@@ -69,10 +69,10 @@ def modify(Cursor,mode = "income"):
     if mode == "income":
         print(view_rates(Cursor,mode="income"))
         while True:
-            chc = input("Please select Cell_Block Rate to be modified: ").upper()
-            if chc in ["A","B","C"]:
+            SelectedCellBlock = input("Please select Cell_Block Rate to be modified: ").upper()
+            if SelectedCellBlock in ["A","B","C"]:
                 new_rate = int(input("Enter new rate: "))
-                Cursor.execute(f"UPDATE INCOME SET RATE = {new_rate} where CELL_BLOCK = '{chc}';")
+                Cursor.execute(f"UPDATE INCOME SET RATE = {new_rate} where CELL_BLOCK = '{SelectedCellBlock}';")
                 print("Update Successful!")
                 print(view_rates(Cursor,mode="income"))
                 break
@@ -81,19 +81,19 @@ def modify(Cursor,mode = "income"):
     if mode == "expenditure":
         print(view_rates(Cursor,mode="expenditure"))
         while True:
-            chc = input("Expense Rate to be modified: ").upper()
-            if chc in ['MAINTANENCE','WATER','ELECTRICITY','FOOD','HEALTHCARE']:
+            SelectedUtility = input("Expense Rate to be modified: ").upper()
+            if SelectedUtility in ['MAINTANENCE','WATER','ELECTRICITY','FOOD','HEALTHCARE']:
                 new_rate = int(input("Enter new rate: "))
-                Cursor.execute(f"UPDATE EXPENDITURE SET RATE = {new_rate} where EXPENSES = '{chc}';")
+                Cursor.execute(f"UPDATE EXPENDITURE SET RATE = {new_rate} where EXPENSES = '{SelectedUtility}';")
                 print("Update Successful!")
                 print(view_rates(Cursor,mode="expenditure"))
                 break
-            elif chc in ["GUARDS"]:
+            elif SelectedUtility in ["GUARDS"]:
                 print("You do not have permission to edit guards salary [Chief Guard User Required!]")
             else:
                 print("Please select a valid expense!")
 
-def funds(DataBase, Cursor,mode = "add"):
+def funds(Cursor,mode = "add"):
     Cursor.execute("SELECT COUNT(*) FROM Transaction")
     transaction_no = Cursor.fetchone()[0] + 1
     date_now = str(datetime.today())
@@ -121,7 +121,7 @@ def funds(DataBase, Cursor,mode = "add"):
     print(f"Balance: {Balance}")
     Cursor.execute(f"INSERT INTO TRANSACTION VALUES('{transaction_no}','{date_now}','{current_time}','{description}','{funds}');")
 
-def finance_menu(Cursor):
+def finance_menu(DataBase, Cursor):
     while True:
         print(f"""\n-------------------------------------HERMES-------------------------------------\n
 1) View Transaction History
@@ -150,3 +150,4 @@ def finance_menu(Cursor):
             break
         else:
             print("Invalid input! ")
+        DataBase.commit()
