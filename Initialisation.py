@@ -12,7 +12,7 @@ def init():
     #Connection Successful
     Cursor = DataBase.cursor()
     Cursor.execute("SHOW DATABASES;")
-    DataBases = []               
+    DataBases = []
     for DB in Cursor.fetchall():
         DataBases.append(DB[0])
     if DataBaseName in DataBases:
@@ -34,10 +34,11 @@ def init():
     Cursor.execute("INSERT INTO Expenditure(EXPENSES,RATE) VALUES('MAINTANENCE',5000),('WATER',2000),('ELECTRICITY',500),('FOOD',500),('HEALTHCARE',1000),('GUARDS',0);")
     Cursor.execute("Create TABLE Balance(AMOUNT int(20));")
     Cursor.execute("Insert INTO Balance(AMOUNT) values(10000);")
+    DataBase.commit()
     print("Tables Created")
     return Cursor, DataBase, True
 
-#generating primary key values when required in table    
+#generating primary key values when required in table
 def random_no(Cursor,Table):
     r=random.randint(10000,99999)
     Cursor.execute(f"SELECT * FROM {Table};")
