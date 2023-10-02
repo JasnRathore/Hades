@@ -13,33 +13,34 @@ def TimeValidate(Time): #Only valid for(HH:MM:SS,HHMMSS)
 
 def InputGuards(Cursor,mode):
     if mode=='A':
-        gno=random_no(Cursor,"guards")
+        GNO = random_no(Cursor,"guards")
     elif mode=='M':
-        #Checking if gno exists
+        #Checking if GNO exists
         Cursor.execute(f"SELECT GNO FROM guards;")
-        guardnos=[]
-        for guard in Cursor.fetchall():
-            guardnos.append(guard[0])
+        ListOfGuardNos=[]
+        for Guard in Cursor.fetchall():
+            ListOfGuardNos.append(Guard[0])
         while True:
-            gno = int(input("Enter GNO to Modify:"))
-            if gno in guardnos:
+            GNO = int(input("Enter GNO to Modify:"))
+            if GNO in ListOfGuardNos:
                 break
             print ("GNO dosent exist\n")
     Cursor.execute(f"SELECT NAME FROM guards;")
-    Names = []
-    Name_lst=Cursor.fetchall()
-    for rec in Name_lst:
-        Names.append(rec[0])
+    ListOfNames = []
+    for Row in Cursor.fetchall():
+        ListOfNames.append(Row[0])
     while True:
         Name = input("Please enter name: ")
-        #Checking for valid name
-        if Name not in Names:
+        if (Name == "" and mode == "A"):
+            print("Cant leave Input field empty")
+        elif (Name == "" and mode == "M") or (Name not in ListOfNames):
             break
-        print("Records with inputted name exist!")
-        check_chc = (input("Do you wish to continue [Y/N]: ")).upper()
-        print()
-        if check_chc == "Y":
-            break
+        else:
+            print("Records with inputted name exist!")
+            check_chc = (input("Do you wish to continue [Y/N]: ")).upper()
+            print()
+            if check_chc == "Y":
+                break
     while True:
         age=input("Please enter an age: ")
         #Checking for valid age
@@ -89,7 +90,7 @@ def InputGuards(Cursor,mode):
             break
         print("\nInvalid time\n")
 
-    return gno,Name,age,gender,salary,cb,dst,det
+    return GNO,Name,age,gender,salary,cb,dst,det
 
 def view(Cursor):
     Cursor.execute(f"SELECT * FROM guards;")
@@ -124,9 +125,9 @@ def modify(DataBase,Cursor):
         for i in range(len(fields)):
             if fields[i]=="":
                 fields[i]=PreviousData[i]
-        gno=fields.pop(0)
-        fields.append(gno)
-        update = f"UPDATE guards SET NAME = %s,AGE = %s,GENDER = %s,SALARY = %s,CELL_BLOCK = %s,DUTY_START_TIME = %s,DUTY_END_TIME = %s WHERE gno = %s;"
+        GNO=fields.pop(0)
+        fields.append(GNO)
+        update = f"UPDATE guards SET NAME = %s,AGE = %s,GENDER = %s,SALARY = %s,CELL_BLOCK = %s,DUTY_START_TIME = %s,DUTY_END_TIME = %s WHERE GNO = %s;"
         Cursor.execute(update,fields)
         DataBase.commit()
         print("\nRecord updated\n")
@@ -140,17 +141,17 @@ def delete(DataBase,Cursor):
     while True:
         view(Cursor)
         print("--------------------------------Delete Record--------------------------------")
-        gno=int(input("Enter the guard number of the record to be deleted: "))
-        #Checking if gno exists
+        GNO=int(input("Enter the guard number of the record to be deleted: "))
+        #Checking if GNO exists
         Cursor.execute(f"SELECT * from guards")
         result = Cursor.fetchall()
         for i in result:
-            if int(i[0]) == gno:
+            if int(i[0]) == GNO:
                 break
         else:
             print("Gno not found!")
             break
-        delete=f"DELETE FROM guards WHERE GNO={gno}"
+        delete=f"DELETE FROM guards WHERE GNO={GNO}"
         Cursor.execute(delete)
         DataBase.commit()
         print("\nRecord deleted\n")
