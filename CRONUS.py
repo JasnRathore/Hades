@@ -33,7 +33,7 @@ def InputPrisonerData(Cursor, Mode = "A"):
     Cursor.execute(f"SELECT NAME FROM prisoners;")
     ListOfNames = []
     for Row in Cursor.fetchall():
-        ListOfNames.append(Name[Row])
+        ListOfNames.append(Row[0])
     while True:
         Name = input("Please enter name: ")
         if (Name == "" and Mode == "A"):
