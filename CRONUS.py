@@ -1,4 +1,3 @@
-import random
 from prettytable import PrettyTable
 from Initialisation import *
 
@@ -11,41 +10,44 @@ def DateValidate(Date): #Only Valid for(YYYY-MM-DD, YYYY/MM/DD, YYYYMMDD)
     except ValueError:
         pass
     return False
-        
-def GetValidInput(prompt, valid_options):
+
+def GetValidInput(Prompt, ValidOptions):
     while True:
-        user_input = input(prompt).upper()
-        if user_input in valid_options:
-            return user_input
+        UserInput = input(Prompt).upper()
+        if UserInput in ValidOptions:
+            return UserInput
         print("Invalid INPUT\n")
 
-def InputPrisonerData(Cursor, mode = "A"):
-    if mode == 'A':
+def InputPrisonerData(Cursor, Mode = "A"):
+    if Mode == 'A':
         PNO = random_no(Cursor, "prisoners")
-    elif mode == 'M':
+    elif Mode == 'M':
         Cursor.execute(f"SELECT PNO FROM prisoners;")
-        PrisonersNos = [prisoner[0] for prisoner in Cursor.fetchall()]
+        ListOfPrisonersNos = [prisoner[0] for prisoner in Cursor.fetchall()]
         while True:
             PNO = int(input("Enter PNO to Modify:"))
-            if PNO in PrisonersNos:
+            if PNO in ListOfPrisonersNos:
                 break
             print ("PNO dosent exist\n")
 
     Cursor.execute(f"SELECT NAME FROM prisoners;")
-    Names = []                                      #Happy
-    for Name in Cursor.fetchall():
-        Names.append(Name[0])
+    ListOfNames = []
+    for Row in Cursor.fetchall():
+        ListOfNames.append(Name[Row])
     while True:
         Name = input("Please enter name: ")
-        if Name not in Names:
+        if (Name == "" and Mode == "A"):
+            print("Cant leave Input field empty")
+        elif (Name == "" and Mode == "M") or (Name not in ListOfNames):
             break
-        print("Records with inputted name exist!")
-        if GetValidInput("Do you wish to continue [Y/N]: ",("Y", "N")) == "Y":
-            break
+        else:
+            print("Records with inputted name exist!")
+            if GetValidInput("Do you wish to continue [Y/N]: ",("Y", "N")) == "Y":
+                break
 
     while True:
         Age = input("Please enter age: ")
-        if Age.isdigit() or (mode == 'M' and Age ==""):
+        if Age.isdigit() or (Mode == 'M' and Age ==""):
             if Age.isdigit():
                 Age = int(Age)
             break
@@ -53,19 +55,19 @@ def InputPrisonerData(Cursor, mode = "A"):
 
     while True:
         Gender = input("Please enter gender [M/F]: ").upper()
-        if Gender in ("M", "F") or (mode == "M" and Gender == ""):
+        if Gender in ("M", "F") or (Mode == "M" and Gender == ""):
             break
         print("Invalid gender. Please enter 'M' or 'F'.")
 
     while True:
         Crime = input("Enter Crime: ")
-        if Crime != "" or (Crime == "" and mode == "M"):
+        if Crime != "" or (Crime == "" and Mode == "M"):
             break
         print("Invalid Input\n")
 
     while True:
         Sentence = input("Please enter Sentence: ")
-        if Sentence.isdigit() or (mode == 'M' and Sentence ==""):
+        if Sentence.isdigit() or (Mode == 'M' and Sentence ==""):
             if Sentence.isdigit():
                 Sentence = int(Sentence)
             break
@@ -73,32 +75,33 @@ def InputPrisonerData(Cursor, mode = "A"):
 
     while True:
         CellBlock = input("Please enter cell block [A/B/C]: ").upper()
-        if CellBlock in ("A", "B", "C")  or (mode == "M" and CellBlock ==""):
+        if CellBlock in ("A", "B", "C")  or (Mode == "M" and CellBlock ==""):
             break
         print("Invalid cell block. Please enter 'A', 'B', or 'C'.")
-    print("Parole [Yes/No]\n1) NO\n2) YES\n")
+
     while True:
-        Parole = (input("Enter Option no:"))
-        if  Parole.isdigit() :
-            Parole = int(Parole)
-            if Parole in (1,2):
-                Parole -= 1
-                break
-        elif mode == "M" and Parole == "":
+        Parole = input("Allow Parole [Y/N]:").upper()
+        if  Parole == "Y":
+            Parole = "YES"
+            break
+        elif Parole == "N":
+            Parole = "NO"
+            break
+        elif Mode == "M" and Parole == "":
             break
         print("\ninvalid Option\n")
     while True:
         ReleaseDate = input("Enter Release Date(YYYY-MM-DD, YYYY/MM/DD, YYYYMMDD):")
-        if DateValidate(ReleaseDate) is True or (mode == "M" and ReleaseDate == ""):
+        if DateValidate(ReleaseDate) is True or (Mode == "M" and ReleaseDate == ""):
             break
-        print("\nInvalid Date\n")    
+        print("\nInvalid Date\n")
     return PNO, Name, Age, Gender, Crime, Sentence, CellBlock, Parole, ReleaseDate
 
 def AddPrisoner(DataBase, Cursor):
     while True:
         print("Add record")
-        data = InputPrisonerData(Cursor, "A")
-        Cursor.execute("INSERT INTO prisoners VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);", data)
+        PrisonerData = InputPrisonerData(Cursor, "A")
+        Cursor.execute("INSERT INTO prisoners VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);", PrisonerData)
         DataBase.commit()
         print("\nRecord added\n")
         if GetValidInput("Do you wish to add another record? [Y/N]: ", ("Y", "N")) == "N":
@@ -107,15 +110,15 @@ def AddPrisoner(DataBase, Cursor):
 def ModifyPrisoner(DataBase, Cursor):
     while True:
         print("Modify record")
-        Data = list(InputPrisonerData(Cursor, "M"))
-        Cursor.execute(f"SELECT * FROM Prisoners WHERE PNO = {Data[0]};")
-        PreviousData = Cursor.fetchone()
-        for i in range(len(Data)):
-            if Data[i] =="":
-                Data[i] = PreviousData[i]
-        Name = Data.pop(0)
-        Data.append(Name)
-        Cursor.execute("UPDATE prisoners SET NAME = %s, AGE = %s, GENDER = %s, CRIME = %s, SENTENCE = %s, CELL_BLOCK = %s, PAROLE = %s, RELEASE_DATE = %s WHERE PNO = %s;", tuple(Data))
+        PrisonerData = list(InputPrisonerData(Cursor, "M"))
+        Cursor.execute(f"SELECT * FROM Prisoners WHERE PNO = {PrisonerData[0]};")
+        PreviousPrisonerData = Cursor.fetchone()
+        for i in range(len(PrisonerData)):
+            if PrisonerData[i] == "":
+                PrisonerData[i] = PreviousPrisonerData[i]
+        PNO = PrisonerData.pop(0)
+        PrisonerData.append(PNO)
+        Cursor.execute("UPDATE prisoners SET NAME = %s, AGE = %s, GENDER = %s, CRIME = %s, SENTENCE = %s, CELL_BLOCK = %s, PAROLE = %s, RELEASE_DATE = %s WHERE PNO = %s;", tuple(PrisonerData))
         DataBase.commit()
         print("\nRecord Updated\n")
         if GetValidInput("Do you wish to Update another record? [Y/N]: ", ("Y", "N")) == "N":
@@ -124,23 +127,23 @@ def ModifyPrisoner(DataBase, Cursor):
 def DeletePrisoner(DataBase, Cursor):
     while True:
         Cursor.execute("SELECT PNO FROM prisoners;")
-        PrisonersNos = [prisoner[0] for prisoner in Cursor.fetchall()]
+        ListOfPrisonersNos = [prisoner[0] for prisoner in Cursor.fetchall()]
         PNO = int(input("Enter PNO to DELETE:"))
-        if PNO not in PrisonersNos:
+        if PNO not in ListOfPrisonersNos:
             print ("PNO dosent exist\n")
             break
         Cursor.execute(f"DELETE FROM prisoners WHERE PNO = {PNO}")
         DataBase.commit()
         print("\nRecord Deleted\n")
-        if GetValidInput("Do you wish to Update another record? [Y/N]: ", ("Y", "N")) == "N":
+        if GetValidInput("Do you wish to Delete another record? [Y/N]: ", ("Y", "N")) == "N":
             break
 
 def PrisonerView(Cursor):
     Cursor.execute("SELECT * FROM prisoners;")
-    mytable = PrettyTable(["PNO","Name","Age","Gen","Crime", "Sentence","Cell","Parole","RD"])
+    MyTable = PrettyTable(["PNO","Name","Age","Gen","Crime", "Sentence","Cell","Parole","RD"])
     for row in Cursor.fetchall():
-        mytable.add_row(list(row))
-    print(mytable)
+        MyTable.add_row(list(row))
+    print(MyTable)
 
 def PrisonerMenu(DataBase, Cursor):
     Options = {1: PrisonerView, 2: AddPrisoner, 3: ModifyPrisoner, 4: DeletePrisoner}
@@ -152,12 +155,12 @@ def PrisonerMenu(DataBase, Cursor):
 4) Delete Prisoner Details
 5) Exit
 ''')
-        MenuOpt = int(input("Please select a choice [1/2/3/4/5]: "))
-        if MenuOpt==1:
-            Options[MenuOpt](Cursor)
-        elif MenuOpt==5:
+        SelectedMenuOption = int(input("Please select a choice [1/2/3/4/5]: "))
+        if SelectedMenuOption == 1:
+            Options[SelectedMenuOption](Cursor)
+        elif SelectedMenuOption == 5:
             break
-        elif MenuOpt in Options:
-            Options[MenuOpt](DataBase, Cursor)
+        elif SelectedMenuOption in Options:
+            Options[SelectedMenuOption](DataBase, Cursor)
         else:
             print("Invalid input! ")
