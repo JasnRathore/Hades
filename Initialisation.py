@@ -12,10 +12,10 @@ def init():
     #Connection Successful
     Cursor = DataBase.cursor()
     Cursor.execute("SHOW DATABASES;")
-    DataBases = []
+    ListOfDataBases = []
     for DB in Cursor.fetchall():
-        DataBases.append(DB[0])
-    if DataBaseName in DataBases:
+        ListOfDataBases.append(DB[0])
+    if DataBaseName in ListOfDataBases:
         print(f"Connected to Database: {DataBaseName}")
         Cursor.execute(f"USE {DataBaseName};")
         return Cursor, DataBase, True
