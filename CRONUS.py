@@ -142,7 +142,8 @@ def ClearPrisonerDetails(DataBase, Cursor):
     if GetVaildInput("Would You like to Delete all Prisoner Details [Y/N]: ",("Y","N")) == "N":
         return
     Cursor.execute("DELTE FROM prisoners;")
-    DataBase.commit
+    DataBase.commit()
+    
 def PrisonerView(Cursor):
     Cursor.execute("SELECT * FROM prisoners;")
     MyTable = PrettyTable(["PNO","Name","Age","Gen","Crime", "Sentence","Cell","Parole","RD"])
@@ -151,7 +152,7 @@ def PrisonerView(Cursor):
     print(MyTable)
 
 def PrisonerMenu(DataBase, Cursor):
-    Options = {1: PrisonerView, 2: AddPrisoner, 3: ModifyPrisoner, 4: DeletePrisoner, 6: }
+    Options = {1: PrisonerView, 2: AddPrisoner, 3: ModifyPrisoner, 4: DeletePrisoner, 6: ClearPrisonerDetails}
     while True:
         print('''
 1) View Prisoner Details
