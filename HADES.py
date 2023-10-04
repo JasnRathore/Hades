@@ -35,8 +35,7 @@ def main():
                     else:
                         Access = {"WARDEN": PrisonerMenu, "CHIEF_OFFICER": guards_menu,"FINANCE_OFFICER": finance_menu}
                         Access[username](DataBase, Cursor)
-                        break
-            if chc == 2:
+            elif chc == 2:
                 while True:
                     print("\n-----------------------------CHANGE PASSWORD-----------------------------\n")
                     username = input("Enter Username: ").upper()
@@ -57,8 +56,10 @@ def main():
                             Cursor.execute(f"UPDATE LOGIN SET PASSW = '{new_password}' where User = '{Users[Userno]}';")
                             print("Password Updated!")
                             break
-            if chc == 3:
+            elif chc == 3:
                 break
+            else:
+                print("Invalid input\n")
         DataBase.commit()
 
 main()
