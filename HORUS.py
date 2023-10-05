@@ -170,7 +170,11 @@ def guards_menu(DataBase,Cursor):
 3) Modify Guard Details
 4) Delete Guard Details
 5) Exit''')
-        menu_chc = int(input("Please select a choice [1/2/3/4/5]: "))
+        try:
+            menu_chc = int(input("Please select a choice [1/2/3/4/5]: "))
+        except:
+            print("Invalid Input!")
+            continue
         if menu_chc==1:
             view(Cursor)
         elif menu_chc==2:

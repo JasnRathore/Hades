@@ -19,7 +19,12 @@ def main():
 1) Login
 2) Change Password
 3) Exit\n""")
-            chc = int(input("Select a choice [1/2/3]: "))
+
+            try:
+                chc = int(input("Select a choice [1/2/3]: "))
+            except:
+                print("Invalid Input!")
+                continue
             #Entering User
             if chc == 1:
                 print("\n-----------------------------LOGIN-----------------------------\n")
@@ -59,7 +64,8 @@ def main():
             elif chc == 3:
                 break
             else:
-                print("Invalid input\n")
+                print("Invalid Input!")
+
         DataBase.commit()
 
 main()

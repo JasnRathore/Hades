@@ -5,10 +5,9 @@ from CRONUS import *
 def guards_salary(Cursor):
     Cursor.execute("SELECT sum(SALARY) from guards;")
     salary = (Cursor.fetchone())[0]
-    Cursor.execute(f"UPDATE expenditure SET rate = {salary} where EXPENSES = 'Guards'")
     if salary == None:
-        return 0
-    return salary
+        salary = 0
+    Cursor.execute(f"UPDATE expenditure SET rate = {salary} where EXPENSES = 'Guards'")
 
 def view_rates(Cursor,mode = "income"):
     if mode == "income":
@@ -34,20 +33,14 @@ def view_rates(Cursor,mode = "income"):
         return (mytable)
 
 def view_fund(Cursor):
-    Cursor.execute("SELECT Cell_Block,count(*) from prisoners group by cell_block;")
-    #Fetches no. of prisoners in each cell block
-    Count = Cursor.fetchall()
-    Cursor.execute("SELECT * from Income;")
-    #Fetches rates
-    Rates = Cursor.fetchall()
-    Income = 0
-    for rec in Count:
-        for rate in Rates:
-            if rec[0] == rate[0]:
-                Income += int(rec[1])*int(rate[1])
-    Cursor.execute("SELECT sum(Rate) FROM Expenditure")
+    #Fetches rates of Incomes
+    Cursor.execute("SELECT sum(rate) from Income natural join Prisoners;")
+    Income = Cursor.fetchone()[0]
     #Fetches rates of expenditure
-    Expenditure = (Cursor.fetchone())[0] + guards_salary(Cursor)
+    Cursor.execute("SELECT sum(Rate) FROM Expenditure")
+    guards_salary(Cursor)
+    Expenditure = (Cursor.fetchone())[0]
+    #Fetches Balance
     Cursor.execute("SELECT Amount FROM Balance")
     Balance = (Cursor.fetchone())[0]
     print(f"\nIncome [Daily]:{Income}, Income [Monthly]: {Income*30}")
@@ -125,7 +118,7 @@ def finance_menu(DataBase, Cursor):
     while True:
         print(f"""\n-------------------------------------HERMES-------------------------------------\n
 1) View Transaction History
-2) View Income, Expenditure & Balance
+2) View Income, Expenditure, Revenue & Balance
 3) Modify Income
 4) Modify Expenditure
 5) Add Funds
@@ -133,7 +126,11 @@ def finance_menu(DataBase, Cursor):
 7) Exit
 """
 )
-        menu_chc = int(input("Please select a choice [1/2/3/4/5/6/7]: "))
+        try:
+            menu_chc = int(input("Please select a choice [1/2/3/4/5/6/7]: "))
+        except:
+            print("Invalid Input!")
+            continue
         if menu_chc==1:
             view_transactions(Cursor)
         elif menu_chc==2:

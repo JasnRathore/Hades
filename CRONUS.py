@@ -99,7 +99,7 @@ def InputPrisonerData(Cursor, Mode = "A"):
 
 def AddPrisoner(DataBase, Cursor):
     while True:
-        print("Add record")
+        print("-"*25+ "ADD RECORD" +"-"*25)
         PrisonerData = InputPrisonerData(Cursor, "A")
         Cursor.execute("INSERT INTO prisoners VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);", PrisonerData)
         DataBase.commit()
@@ -109,7 +109,8 @@ def AddPrisoner(DataBase, Cursor):
 
 def ModifyPrisoner(DataBase, Cursor):
     while True:
-        print("Modify record")
+        print("-"*25+ "MODIFY RECORD" +"-"*25)
+        PrisonerView(Cursor)
         PrisonerData = list(InputPrisonerData(Cursor, "M"))
         Cursor.execute(f"SELECT * FROM Prisoners WHERE PNO = {PrisonerData[0]};")
         PreviousPrisonerData = Cursor.fetchone()
@@ -127,6 +128,7 @@ def ModifyPrisoner(DataBase, Cursor):
 def DeletePrisoner(DataBase, Cursor):
     while True:
         PrisonerView(Cursor)
+        print("-"*25+ "DELETE" +"-"*25)
         Cursor.execute("SELECT PNO FROM prisoners;")
         ListOfPrisonersNos = [prisoner[0] for prisoner in Cursor.fetchall()]
         PNO = int(input("Enter PNO to DELETE:"))
@@ -139,11 +141,11 @@ def DeletePrisoner(DataBase, Cursor):
         if GetValidInput("Do you wish to Delete another record? [Y/N]: ", ("Y", "N")) == "N":
             break
 def ClearPrisonerDetails(DataBase, Cursor):
-    if GetVaildInput("Would You like to Delete all Prisoner Details [Y/N]: ",("Y","N")) == "N":
+    if GetValidInput("Would You like to Delete all Prisoner Details [Y/N]: ",("Y","N")) == "N":
         return
     Cursor.execute("DELTE FROM prisoners;")
     DataBase.commit()
-    
+
 def PrisonerView(Cursor):
     Cursor.execute("SELECT * FROM prisoners;")
     MyTable = PrettyTable(["PNO","Name","Age","Gen","Crime", "Sentence","Cell","Parole","RD"])
@@ -151,21 +153,37 @@ def PrisonerView(Cursor):
         MyTable.add_row(list(row))
     print(MyTable)
 
+def SearchPrisonerDetails(Cursor):
+    print("-"*25+ "SEARCH" +"-"*25)
+    PNO = int(input("Enter Prisoner No: "))
+    Cursor.execute(f"SELECT * FROM prisoners WHERE PNO = {PNO};")
+    MyTable = PrettyTable(["PNO","Name","Age","Gen","Crime", "Sentence","Cell","Parole","RD"])
+    for row in Cursor.fetchall():
+        MyTable.add_row(list(row))
+    print(MyTable)
+
+
+
 def PrisonerMenu(DataBase, Cursor):
-    Options = {1: PrisonerView, 2: AddPrisoner, 3: ModifyPrisoner, 4: DeletePrisoner, 6: ClearPrisonerDetails}
+    Options = {1: PrisonerView, 2: AddPrisoner, 3: ModifyPrisoner, 4: SearchPrisonerDetails, 5: DeletePrisoner, 6: ClearPrisonerDetails}
     while True:
         print('''
 1) View Prisoner Details
 2) Add Prisoner Details
 3) Modify Prisoner Details
-4) Delete Prisoner Details
-5) Delete All Prisoner Details
-6) Exit
+4) Search for Prisoner
+5) Delete Prisoner Details
+6) Delete All Prisoner Details
+7) Exit
 ''')
-        SelectedMenuOption = int(input("Please select a choice [1/2/3/4/5]: "))
-        if SelectedMenuOption == 1:
+        try:
+            SelectedMenuOption = int(input("Please select a choice [1/2/3/4/5/6]: "))
+        except:
+            print("Invalid Input!")
+            continue
+        if SelectedMenuOption in (1,4):
             Options[SelectedMenuOption](Cursor)
-        elif SelectedMenuOption == 6:
+        elif SelectedMenuOption == 7:
             break
         elif SelectedMenuOption in Options:
             Options[SelectedMenuOption](DataBase, Cursor)
