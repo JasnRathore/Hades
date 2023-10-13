@@ -10,7 +10,7 @@ def init():
         print("Error:", err)
         return None, None, False
     #Connection Successful
-    Cursor = DataBase.cursor()
+    Cursor = DataBase.cursor(buffered=True)
     Cursor.execute("SHOW DATABASES;")
     ListOfDataBases = []
     for DB in Cursor.fetchall():
