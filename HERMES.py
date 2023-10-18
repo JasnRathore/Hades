@@ -36,6 +36,8 @@ def view_fund(Cursor):
     #Fetches rates of Incomes
     Cursor.execute("SELECT sum(rate) from Income natural join Prisoners;")
     Income = Cursor.fetchone()[0]
+    if Income == None:
+        Income = 0
     #Fetches rates of expenditure
     guards_salary(Cursor)
     Cursor.execute("SELECT sum(Rate) FROM Expenditure")
