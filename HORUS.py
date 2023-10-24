@@ -136,6 +136,18 @@ def modify(DataBase,Cursor):
             continue
         else:
             break
+def search(Cursor):
+    print("--------------------------------Search Record--------------------------------")
+    GNO = input("Enter GNO to search: ")
+    Cursor.execute(f"SELECT * FROM guards WHERE GNO = {GNO};")
+    result = Cursor.fetchall()
+    if len(result)==0:
+        print("No records found for the given GNO.")
+    else:
+        mytable = PrettyTable(["GNO", "Name", "Age", "Gen", "Salary", "Cell", "StartTime", "EndTime"])
+        for row in result:
+            mytable.add_row(list(row))
+        print(mytable)
 
 def delete(DataBase,Cursor):
     while True:
@@ -168,8 +180,9 @@ def guards_menu(DataBase,Cursor):
 1) View Guard Details
 2) Add Guard Details
 3) Modify Guard Details
-4) Delete Guard Details
-5) Exit''')
+4) Search Guard Details
+5) Delete Guard Details
+6) Exit''')
         try:
             menu_chc = int(input("Please select a choice [1/2/3/4/5]: "))
         except:
@@ -182,8 +195,10 @@ def guards_menu(DataBase,Cursor):
         elif menu_chc==3:
             modify(DataBase,Cursor)
         elif menu_chc==4:
-            delete(DataBase,Cursor)
+            search(Cursor)
         elif menu_chc==5:
+            delete(DataBase,Cursor)
+        elif menu_chc==6:
             break
         else:
             print("Invalid input! ")
