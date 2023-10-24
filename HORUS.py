@@ -139,6 +139,10 @@ def modify(DataBase,Cursor):
 def search(Cursor):
     print("--------------------------------Search Record--------------------------------")
     GNO = input("Enter GNO to search: ")
+    #Checking for valid gno
+    if GNO.isdigit()==False:
+        print("Invalid input!")
+        return
     Cursor.execute(f"SELECT * FROM guards WHERE GNO = {GNO};")
     result = Cursor.fetchall()
     if len(result)==0:
@@ -153,25 +157,26 @@ def delete(DataBase,Cursor):
     while True:
         view(Cursor)
         print("--------------------------------Delete Record--------------------------------")
-        GNO=int(input("Enter the guard number of the record to be deleted: "))
+        GNO=input("Enter the guard number of the record to be deleted: ")
+        #Checking for valid gno
+        if GNO.isdigit()==False:
+            print("Invalid input!")
+            return
         #Checking if GNO exists
-        Cursor.execute(f"SELECT * from guards")
+        Cursor.execute(f"SELECT * FROM guards WHERE GNO = {GNO};")
         result = Cursor.fetchall()
-        for i in result:
-            if int(i[0]) == GNO:
+        if len(result)==0:
+            print("No records found for the given GNO.")
+        else:
+            delete=f"DELETE FROM guards WHERE GNO={GNO}"
+            Cursor.execute(delete)
+            DataBase.commit()
+            print("\nRecord deleted\n")
+            del_chc = input("Do you wish to delete another record? [Y/N]: ").upper()
+            if del_chc == "Y":
+                continue
+            else:
                 break
-        else:
-            print("Gno not found!")
-            break
-        delete=f"DELETE FROM guards WHERE GNO={GNO}"
-        Cursor.execute(delete)
-        DataBase.commit()
-        print("\nRecord deleted\n")
-        del_chc = input("Do you wish to delete another record? [Y/N]: ").upper()
-        if del_chc == "Y":
-            continue
-        else:
-            break
 
 def guards_menu(DataBase,Cursor):
     while True:
